@@ -1,0 +1,25 @@
+{
+  "name": "playwright",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "vscode-debug": "playwright test --config ./playwright.config.ts --workers=1",
+    "codegen": "npm --prefix ./codegen run start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.45.3",
+    "@types/node": "^20.11.19"
+  },
+  "runtimeExecutable": "npm",
+  "runtimeArgs": [
+    "run-script",
+    "vscode-debug",
+    "--",
+    "${fileBasename}"
+  ]
+}

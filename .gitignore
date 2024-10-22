@@ -1,0 +1,15 @@
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+config.local.ts
+/mocks/postman/DCB.postman_collection.json
+chromium-win64/
+chromium-win64.zip
+firefox-win64/
+chromium-1124/
+pw-browsers/
+/codegen/node_modules
+/.idea/
+/reports/
