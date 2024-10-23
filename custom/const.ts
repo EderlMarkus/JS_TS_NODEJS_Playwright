@@ -8,3 +8,9 @@ export const COLORS = {
   lastschrift: convertHexToRGB("#915b9f"),
   textHighlight: convertHexToRGB("#1c6b65"),
 };
+
+export const Viewport = {
+  MOBILE: { width: 767, height: 720 },
+  TABLET: { width: 1279, height: 720 },
+  DESKTOP: { width: 1280, height: 720 },
+};

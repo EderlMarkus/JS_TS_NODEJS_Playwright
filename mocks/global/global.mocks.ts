@@ -70,4 +70,36 @@ export const MOCKS: Mock[] = [
       limit: 30,
     },
   },
+  {
+    url: "https://dummyjson.com/comments/add",
+    response: null,
+    responses: [
+      {
+        request: {
+          method: "POST",
+          body: { body: "success", postId: 3, userId: 5 },
+        },
+        response: {
+          id: 1,
+          body: "success",
+          postId: 3,
+          user: {
+            id: 5,
+            username: "abc",
+            fullName: "Max Maier",
+          },
+        },
+      },
+      {
+        request: {
+          method: "POST",
+          body: { body: "failure", postId: 3, userId: 5 },
+        },
+        status: 500,
+        response: {
+          body: "success",
+        },
+      },
+    ],
+  },
 ];
