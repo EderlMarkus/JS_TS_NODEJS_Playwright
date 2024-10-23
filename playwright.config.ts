@@ -6,12 +6,6 @@ import { log } from "./custom/functions";
 
 export const localConfig = config;
 
-export const Viewport = {
-  MOBILE: { width: 767, height: 720 },
-  TABLET: { width: 1279, height: 720 },
-  DESKTOP: { width: 1280, height: 720 },
-};
-
 export const test = base.extend({
   page: async ({ page }, use) => {
     if (config.useMocks) {
