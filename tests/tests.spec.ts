@@ -126,7 +126,6 @@ test.describe("Tests", () => {
     await page.getByRole("menuitem", { name: "Add" }).click();
     await page.getByLabel("Textarea").click();
     await page.getByLabel("Textarea").fill("Hallo Welt");
-    await page.getByRole("button", { name: "Speichern" }).click();
     await page.on("request", (request) => {
       const url = "https://dummyjson.com/comments/add";
       const requestUrl = request.url();
@@ -135,6 +134,8 @@ test.describe("Tests", () => {
         expect(payload.body).toBe("Hallo Welt");
       }
     });
+    await page.getByRole("button", { name: "Speichern" }).click();
+
     await expect(page.getByText("Gespeichert")).toBeVisible();
   });
 
@@ -156,21 +157,25 @@ test.describe("Tests", () => {
   });
 
   test("selects current Date from Datepicker ", async ({ page }) => {
-    await page.clock.setFixedTime(new Date("2024-02-02T10:00:00"));
-    await page.getByRole("button", { name: "Menu" }).click();
-    await page.getByRole("menuitem", { name: "Datepicker" }).click();
-    await page.getByLabel("Open calendar").click();
-    await expect(page.locator(".mat-calendar-body-today")).toHaveText(" 2 ");
-    await page.getByLabel("February 2,").click();
+    await test.step("Set Browser to February 2nd and check if Datepicker shows correct Date", async () => {
+      await page.clock.setFixedTime(new Date("2024-02-02T10:00:00"));
+      await page.getByRole("button", { name: "Menu" }).click();
+      await page.getByRole("menuitem", { name: "Datepicker" }).click();
+      await page.getByLabel("Open calendar").click();
+      await expect(page.locator(".mat-calendar-body-today")).toHaveText(" 2 ");
+      await page.getByLabel("February 2,").click();
+    });
 
-    await page.clock.setFixedTime(new Date("2024-02-03T10:00:00"));
-    await page.getByRole("button", { name: "Menu" }).click();
-    await page.getByRole("menuitem", { name: "Add" }).click();
-    await page.getByRole("button", { name: "Menu" }).click();
-    await page.getByRole("menuitem", { name: "Datepicker" }).click();
-    await page.getByLabel("Open calendar").click();
-    await expect(page.locator(".mat-calendar-body-today")).toHaveText(" 3 ");
-    await page.getByLabel("February 3,").click();
+    await test.step("Set Browser to February 3rd and check if Datepicker shows correct Date", async () => {
+      await page.clock.setFixedTime(new Date("2024-02-03T10:00:00"));
+      await page.getByRole("button", { name: "Menu" }).click();
+      await page.getByRole("menuitem", { name: "Add" }).click();
+      await page.getByRole("button", { name: "Menu" }).click();
+      await page.getByRole("menuitem", { name: "Datepicker" }).click();
+      await page.getByLabel("Open calendar").click();
+      await expect(page.locator(".mat-calendar-body-today")).toHaveText(" 3 ");
+      await page.getByLabel("February 3,").click();
+    });
   });
 
   test("has correct Size on Mobile ", async ({ page }) => {
