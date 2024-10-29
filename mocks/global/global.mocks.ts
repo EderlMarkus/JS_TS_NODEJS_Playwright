@@ -97,7 +97,7 @@ export const MOCKS: Mock[] = [
         },
         status: 500,
         response: {
-          body: "success",
+          body: "failure",
         },
       },
     ],
