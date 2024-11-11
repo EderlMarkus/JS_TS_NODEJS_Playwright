@@ -77,7 +77,7 @@ export const MOCKS: Mock[] = [
       {
         request: {
           method: "POST",
-          body: { body: "success", postId: 3, userId: 5 },
+          payload: { body: "success", postId: 3, userId: 5 },
         },
         response: {
           id: 1,
@@ -93,7 +93,7 @@ export const MOCKS: Mock[] = [
       {
         request: {
           method: "POST",
-          body: { body: "failure", postId: 3, userId: 5 },
+          payload: { body: "failure", postId: 3, userId: 5 },
         },
         status: 500,
         response: {

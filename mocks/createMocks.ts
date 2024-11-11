@@ -26,7 +26,7 @@ export async function createMocks(page, mocks: Mock[] = globalMocks) {
           const postData = JSON.parse(route.request().postData());
           const matchingElement = responses?.find(
             (response) =>
-              isSamePostData(response.request?.body, postData) &&
+              isSamePostData(response.request?.payload, postData) &&
               isCorrectMethod(response.request?.method)
           );
           log("url", url);

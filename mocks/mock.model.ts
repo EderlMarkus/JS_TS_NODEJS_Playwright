@@ -8,6 +8,6 @@ export interface Response {
   status?: number;
   request?: {
     method: string;
-    body?: Object;
+    payload?: Object;
   };
 }
