@@ -5,7 +5,7 @@
   <br>
   <img src=./readme_assets/3.PNG width=300>
 
-### Setup Mocks
+<h3 id="setup-mocks">Setup Mocks</h3>
 
 Angenommen ich möchte für eine bestimmten Request eine vordefinierte Antwort schicken:
 
@@ -54,6 +54,12 @@ Man kann sich auch den Code für einen Testfall generieren lassen:
   <br>
   <img src=./readme_assets/codegen.gif width=300></a>
 
+### Naming Convention
+Es gibt einige Scripts im <a href="./package.json">package.json</a> mit denen man Tests isoliert starten kann.
+Diese basieren auf einer Naming Convention die man einhalten muss um die korrekte Ausführung zu garantieren:
+* Tests die mit "using Mocks" enden (zB: "Mein toller Test using Mocks") sind für Testfälle vorgesehen, die lokal gemockte Daten verwenden (siehe <a href="#setup-mocks">Setup Mocks</a>)
+* Tests die mit "UI Only" enden (zB: "should display login form UI Only) sind für Testfälle vorgesehen, die keine Schnittstellen aufrufen und rein UI-Elemente prüfen.
+* Alle anderen Tests sind für Testfälle vorgesehen, die direkt mit der, in der App verwendeten Schnittstellen interagieren, also das verknüpfte Backend aufrufen und die Requests nicht abfangen (Sollte man wohl nur verwenden wenn man die App mit allen Servies und DB lokal laufen hat oder eine gekapselte Umgebung anspricht)
 ## Warum Playwright/Komponenten Tests?
 
 - **Einfache und robuste Einführung bei nicht getesteten Projekten**: Durch das rendern des gesamten Browsers und nicht nur der Komponenten, eignet es sich für Projekte, die bereits historisch gewachsen sind und über keine Testabdeckung verfügen, als erster Schritt der Qualitätssicherung vor einem Refactoring.
