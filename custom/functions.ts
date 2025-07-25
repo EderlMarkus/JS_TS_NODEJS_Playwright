@@ -1,96 +1,30 @@
-import { config } from "../config.local";
 import { MOCKS } from "../mocks";
+import { MOCKS as globalMocks } from "../mocks/global/global.mocks"
+import { Browser, BrowserContextOptions, expect, Page } from "@playwright/test";
+import { Mock } from "../mocks/mock.model";
 import { createMocks } from "../mocks/createMocks";
+import { MyPage } from "../playwright.config";
 
-export const log = (message?: any, ...optionalParams: any[]) => {
-  if (config.logging) console.log(message, ...optionalParams);
-};
 
-export const setParamsForToken = async (tokenConfig, page) => {
-  const url = `https://sso100.grz.cloud/as/token.oauth2?${new URLSearchParams(
-    tokenConfig
-  )
-    .toString()
-    .replaceAll("%2C", "%20")}`;
-  await page.route("https://sso100.grz.cloud/as/token.oauth2?*", (route) => {
-    route.continue({ url });
-  });
-};
-
-export const setRoles = async (
-  roles: {
-    roles_custom: string[];
-    roles_feature: string[];
-  },
-  page
-) => {
-  const tokenConfig = config.tokenConfig;
-  tokenConfig.roles_custom = roles.roles_custom;
-  tokenConfig.roles_feature = roles.roles_feature;
-  await setParamsForToken(tokenConfig, page);
-};
-
-export const createNewContext = async (browser, contextOptions?: Object) => {
-  const context = await browser.newContext(contextOptions);
-  await context.clearCookies();
-  const portal = await context.newPage();
-  if (config.useMocks) await createMocks(portal, MOCKS, false);
+export const createNewContext = async (params: {
+  browser: Browser,
+  baseUrl: string,
+  email: string,
+  useMocks: boolean,
+  login?: boolean,
+  contextOptions?: BrowserContextOptions
+}): Promise<MyPage> => {
+  const { browser, baseUrl, email, useMocks, login, contextOptions } = params
+  const context = await browser.newContext({ ...contextOptions });
+  const portal = await context.newPage() as Portal;
+  portal.createMocks = async (mocks: Mock[]) => {
+    return createMocks(portal, mocks, baseUrl)
+  }
+  if (useMocks) await portal.createMocks(MOCKS);
+  if (!useMocks) await portal.createMocks(globalMocks); //globalle Mocks immer setzen
   return portal;
 };
 
-export const setRolesAndCreateNewContext = async (
-  roles: { roles_custom: string[]; roles_feature: string[] },
-  browser
-) => {
-  const portal = await createNewContext(browser);
-  await setRoles(roles, portal);
-  await portal.goto(`${config.baseUrl}`);
-  return portal;
-};
-
-export const addRolesAndCreateNewContext = async (
-  roles: { roles_custom?: string[]; roles_feature?: string[] },
-  browser
-) => {
-  const roles_custom = [
-    ...new Set(
-      Array.prototype.concat(
-        config.tokenConfig.roles_custom,
-        roles.roles_custom ?? []
-      )
-    ),
-  ];
-  const roles_feature = [
-    ...new Set(
-      Array.prototype.concat(
-        config.tokenConfig.roles_feature,
-        roles.roles_feature ?? []
-      )
-    ),
-  ];
-  return setRolesAndCreateNewContext({ roles_custom, roles_feature }, browser);
-};
-
-export const removeRolesAndCreateNewContext = async (
-  roles: { roles_custom?: string[]; roles_feature?: string[] },
-  browser
-) => {
-  const roles_custom = [
-    ...new Set(
-      config.tokenConfig.roles_custom.filter(
-        (defaultRole) => !roles.roles_custom?.includes(defaultRole)
-      )
-    ),
-  ];
-  const roles_feature = [
-    ...new Set(
-      config.tokenConfig.roles_feature.filter(
-        (defaultRole) => !roles.roles_feature?.includes(defaultRole)
-      )
-    ),
-  ];
-  return setRolesAndCreateNewContext({ roles_custom, roles_feature }, browser);
-};
 
 export const convertHexToRGB = (hex) => {
   hex = hex.replace(/^#/, "");
@@ -156,12 +90,12 @@ export const checkPayload = async (page, data: { url: string, method: string, pa
       );
     const expectPartiallyCorrect = (fullObject, partiallyObject) => {
       for (let key in fullObject) {
-        if (!partiallyObject[key]) continue;
+        if (partiallyObject[key] === undefined) continue;
 
         if (typeof fullObject[key] === 'object' && fullObject[key] !== null) {
           expectPartiallyCorrect(fullObject[key], partiallyObject[key]);
         } else {
-          log("expect(" + fullObject[key] + ").toBe(" + partiallyObject[key] + ")");
+          console.log("expect(" + fullObject[key] + ").toBe(" + partiallyObject[key] + ")");
           expect(fullObject[key]).toBe(partiallyObject[key])
         }
       }
@@ -182,3 +116,4 @@ export const checkPayload = async (page, data: { url: string, method: string, pa
   });
 
 }
+

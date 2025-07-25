@@ -10,9 +10,9 @@
     "postinstall": "cd codegen && npm i",
     "tests-with-ui": "npx playwright test --ui",
     "tests-that-use-mocks": "node custom/set-usemocks.ts -true && npx playwright test -g \" using Mocks\"",
-    "tests-that-use-api": "node custom/set-usemocks.ts -true && npx playwright test -g \" using API\"",
+    "tests-that-use-ui-only": "node custom/set-usemocks.ts -true && npx playwright test -g \" UI Only\"",
     "tests-that-dont-use-mocks": "node custom/set-usemocks.ts -false && npx playwright test -g \"^(?!.*\\busing Mocks\\b).+$\"",
-    "tests-with-mocking": "node custom/set-usemocks.ts -true && npx playwright test",
+    "tests-with-mocking": "node custom/set-usemocks.ts -true && npx playwright test"
   },
   "keywords": [],
   "author": "",

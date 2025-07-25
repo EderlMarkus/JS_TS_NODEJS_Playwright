@@ -1,19 +1,51 @@
-import { defineConfig, test as base } from "@playwright/test";
-import { config } from "./config.local";
+import { defineConfig, test as base, Page } from "@playwright/test";
 import { createMocks } from "./mocks/createMocks";
 import { MOCKS } from "./mocks";
 import { log } from "./custom/functions";
+import { Mock } from "./mocks/mock.model";
 
-export const localConfig = config;
 
-export const test = base.extend({
-  page: async ({ page }, use) => {
-    if (config.useMocks) {
-      await createMocks(page, MOCKS);
+export type MyPage = Page & {
+  createMocks: (mocks: Mock[]) => Promise<void>;
+
+}
+
+export type MyOptions = {
+  myPage: MyPage;
+  baseUrl: string,
+  useMocks: boolean,
+  logging: boolean,
+}
+
+export const test = base.extend<MyOptions>({
+  useMocks: async ({ }, use, testInfo) => {
+    await use((testInfo.project.use as any).useMocks as boolean);
+  },
+  logging: async ({ }, use, testInfo) => {
+    await use((testInfo.project.use as any).logging as boolean);
+  },
+  baseUrl: async ({ }, use, testInfo) => {
+    await use((testInfo.project.use as any).baseUrl as string);
+  },
+  myPage: async ({ page }, use, testInfo) => {
+    const myPage = page as MyPage;
+    const useMocks = (testInfo.project.use as any).useMocks as boolean;
+    const logging = (testInfo.project.use as any).logging as boolean;
+    const baseUrl = (testInfo.project.use as any).baseUrl as string;
+
+    myPage.createMocks = async (
+      mocks: Mock[],
+    ) => {
+      return createMocks(myPage, mocks, baseUrl);
     }
-    log("mocks created");
-    await page.goto(`${localConfig.baseUrl}`);
-    await use(page);
+    if (useMocks) {
+      await myPage.createMocks(MOCKS);
+      if (logging) {
+        log("mocks created");
+      }
+    }
+    await myPage.goto(baseUrl);
+    await use(myPage);
   },
 });
 
@@ -30,9 +62,13 @@ export default defineConfig({
         headless: true,
         launchOptions: {
           executablePath:
-            "C:/Entwicklung/playwright/chromium-win64/chrome-win/chrome.exe",
+            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
         },
-      },
+        baseUrl: "https://ederlmarkus.github.io/JS_ANGULAR_Performance/",
+        useMocks: false,
+        logging: false,
+        tokenConfig: null,
+      } as any,
     },
   ],
 });

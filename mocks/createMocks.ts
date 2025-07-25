@@ -1,14 +1,12 @@
-import { log } from "../custom/functions";
-import { localConfig } from "../playwright.config";
 import { MOCKS as globalMocks } from "./global/global.mocks";
 import { Mock } from "./mock.model";
 
-export async function createMocks(page, mocks: Mock[] = globalMocks) {
+export async function createMocks(page, mocks: Mock[] = globalMocks, baseUrlApi) {
   mocks.map(async (element) => {
     if (element.response || element.responses?.length) {
       const url = element.url.startsWith("http")
         ? element.url
-        : `${localConfig.baseUrl}/${element.url}`;
+        : `${baseUrlApi}/${element.url}`;
       const responses = element.responses;
       const isCorrectMethod = (method) => method === "POST" || method === "PUT";
       const isSamePostData = (requestBody, postData) => {
@@ -29,16 +27,16 @@ export async function createMocks(page, mocks: Mock[] = globalMocks) {
               isSamePostData(response.request?.payload, postData) &&
               isCorrectMethod(response.request?.method)
           );
-          log("url", url);
-          log("matchingElement", matchingElement);
+          console.log("url", url);
+          console.log("matchingElement", matchingElement);
           if (matchingElement) {
-            log(url + ": fulfills with matchingElement.response");
+            console.log(url + ": fulfills with matchingElement.response");
             await route.fulfill({
               status: matchingElement.status ?? 200,
               json: matchingElement.response,
             });
           } else if (element.response) {
-            log(url + ": fulfills with default response 1");
+            console.log(url + ": fulfills with default response 1");
             await route.fulfill({
               status: element.status ?? 200,
               json: element.response,
@@ -51,7 +49,7 @@ export async function createMocks(page, mocks: Mock[] = globalMocks) {
       }
 
       if (element.response && !element.responses?.length) {
-        log(url + ": fulfills with default response 2");
+        console.log(url + ": fulfills with default response 2");
         await page.route(
           url,
           async (route) =>
@@ -63,7 +61,7 @@ export async function createMocks(page, mocks: Mock[] = globalMocks) {
         return;
       }
       if (!element.response && !element.responses?.length) {
-        log(url + ": route continues");
+        console.log(url + ": route continues");
         await page.route(url, async (route) => await route.continue());
       }
     }
